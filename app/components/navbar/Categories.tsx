@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import Container from '../Container'
 import { 
   GiBarn, 
@@ -107,6 +107,7 @@ const Categories = () => {
   const params = useSearchParams();
   const category = params?.get('category');
   return (
+    <Suspense>
     <Container>
       <div className='pt-4
           flex 
@@ -128,6 +129,7 @@ const Categories = () => {
       </div>
 
     </Container>
+    </Suspense>
   )
 }
 
