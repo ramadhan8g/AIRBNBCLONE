@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Container from "../Container";
 import Logo from "./Logo";
 import Search from "./Search";
@@ -32,8 +32,9 @@ const Navbar = () => {
           </div>
         </Container>
       </div>
-  
+      <Suspense>
       <Categories />
+      </Suspense>
     </div>
   );
 };
