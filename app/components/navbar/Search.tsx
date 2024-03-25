@@ -1,37 +1,128 @@
-"use client";
+'use client';
 
-import React from "react";
+import { useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
+import { BiSearch } from 'react-icons/bi';
+import { differenceInDays } from 'date-fns';
+
+import useSearchModal from '@/app/hooks/useSearchModal';
+import useCountries from '@/app/hooks/useCountries';
 
 const Search = () => {
-  return (
-    <div className="">
-      <div className=" border-[1px]  w-full  md:w-auto  py-2  rounded-full  shadow-sm  hover:shadow-md  transition  cursor-pointer ">
-        <div className=" flex  flex-row  items-center  justify-between ">
-          <div className=" text-sm  font-semibold  px-6 ">Anywhere</div>
-          <div className=" hidden  sm:block  text-sm  font-semibold  px-6  border-x-[1px]  flex-1  text-center ">
-            Any Week
-          </div>
-          <div className=" text-sm  pl-6  pr-2  text-gray-600  flex  flex-row  items-center  gap-3 ">
-            <div className="hidden sm:block">Add Guests</div>
-            <div className=" p-2  bg-rose-500  rounded-full  text-white ">
-              <svg
-                stroke="currentColor"
-                fill="currentColor"
-                stroke-width="0"
-                viewBox="0 0 24 24"
-                height="18"
-                width="18"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path>
-              </svg>
-            </div>
+  const searchModal = useSearchModal();
+  const params = useSearchParams();
+  const { getByValue } = useCountries();
+
+  const  locationValue = params?.get('locationValue'); 
+  const  startDate = params?.get('startDate');
+  const  endDate = params?.get('endDate');
+  const  guestCount = params?.get('guestCount');
+
+  const locationLabel = useMemo(() => {
+    if (locationValue) {
+      return getByValue(locationValue as string)?.label;
+    }
+
+    return 'Anywhere';
+  }, [locationValue, getByValue]);
+
+  const durationLabel = useMemo(() => {
+    if (startDate && endDate) {
+      const start = new Date(startDate as string);
+      const end = new Date(endDate as string);
+      let diff = differenceInDays(end, start);
+
+      if (diff === 0) {
+        diff = 1;
+      }
+
+      return `${diff} Days`;
+    }
+
+    return 'Any Week'
+  }, [startDate, endDate]);
+
+  const guestLabel = useMemo(() => {
+    if (guestCount) {
+      return `${guestCount} Guests`;
+    }
+
+    return 'Add Guests';
+  }, [guestCount]);
+
+  return ( 
+    <div
+      onClick={searchModal.onOpen}
+      className="
+        border-[1px] 
+        w-full 
+        md:w-auto 
+        py-2 
+        rounded-full 
+        shadow-sm 
+        hover:shadow-md 
+        transition 
+        cursor-pointer
+      "
+    >
+      <div 
+        className="
+          flex 
+          flex-row 
+          items-center 
+          justify-between
+        "
+      >
+        <div 
+          className="
+            text-sm 
+            font-semibold 
+            px-6
+          "
+        >
+          {locationLabel}
+        </div>
+        <div 
+          className="
+            hidden 
+            sm:block 
+            text-sm 
+            font-semibold 
+            px-6 
+            border-x-[1px] 
+            flex-1 
+            text-center
+          "
+        >
+          {durationLabel}
+        </div>
+        <div 
+          className="
+            text-sm 
+            pl-6 
+            pr-2 
+            text-gray-600 
+            flex 
+            flex-row 
+            items-center 
+            gap-3
+          "
+        >
+          <div className="hidden sm:block">{guestLabel}</div>
+          <div 
+            className="
+              p-2 
+              bg-rose-500 
+              rounded-full 
+              text-white
+            "
+          >
+            <BiSearch size={18} />
           </div>
         </div>
       </div>
     </div>
-    
   );
-};
-
+}
+ 
 export default Search;

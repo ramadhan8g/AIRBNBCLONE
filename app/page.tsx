@@ -1,9 +1,34 @@
-import Image from "next/image";
+import Container from "@/app/components/Container";
+import ListingCard from "@/app/components/listings/ListingCard";
+import EmptyState from "@/app/components/EmptyState";
 
-export default function Home() {
+import getListings, { 
+  IListingsParams
+} from "@/app/actions/getListings";
+import getCurrentUser from "@/app/actions/getCurrentUser";
+import ClientOnly from "./components/ClientOnly";
+
+interface HomeProps {
+  searchParams: IListingsParams
+};
+
+const Home = async ({ searchParams }: HomeProps) => {
+  const listings = await getListings(searchParams);
+  const currentUser = await getCurrentUser();
+
+  if (listings.length === 0) {
+    return (
+      <ClientOnly>
+        <EmptyState showReset />
+      </ClientOnly>
+    );
+  }
+  // throw new Error('Not implemented');
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <div  className="
+    <ClientOnly>
+      <Container>
+        <div 
+          className="
             pt-24
             grid 
             grid-cols-1 
@@ -13,9 +38,19 @@ export default function Home() {
             xl:grid-cols-5
             2xl:grid-cols-6
             gap-8
-          ">
-          page
+          "
+        >
+          {listings.map((listing: any) => (
+            <ListingCard
+              currentUser={currentUser}
+              key={listing.id}
+              data={listing}
+            />
+          ))}
         </div>
-    </main>
-  );
+      </Container>
+    </ClientOnly>
+  )
 }
+
+export default Home;
